@@ -513,8 +513,6 @@ type CommitOptions struct {
 	// Amend will create a new commit object and replace the commit that HEAD currently
 	// points to. Cannot be used with All nor Parents.
 	Amend bool
-	// Path will stage the specified paths anyway with no status check if the modified or not
-	Path []string
 }
 
 // Validate validates the fields and sets the default values.
