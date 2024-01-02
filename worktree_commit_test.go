@@ -131,7 +131,6 @@ func (s *WorktreeSuite) TestCommitAmend(c *C) {
 	_, err = w.Commit("foo\n", &CommitOptions{Author: defaultSignature()})
 	c.Assert(err, IsNil)
 
-
 	amendedHash, err := w.Commit("bar\n", &CommitOptions{Amend: true})
 	c.Assert(err, IsNil)
 
@@ -142,6 +141,37 @@ func (s *WorktreeSuite) TestCommitAmend(c *C) {
 	c.Assert(commit.Message, Equals, "bar\n")
 
 	assertStorageStatus(c, s.Repository, 13, 11, 11, amendedHash)
+}
+
+func (s *WorktreeSuite) TestAddPathWithForce(c *C) {
+	expected := plumbing.NewHash("150c353bbc5d2eee51a62e80e8c53b31d3bf5f52")
+
+	fs := memfs.New()
+	w := &Worktree{
+		r:          s.Repository,
+		Filesystem: fs,
+	}
+
+	err := w.Checkout(&CheckoutOptions{})
+	c.Assert(err, IsNil)
+
+	util.WriteFile(fs, "LICENSE", []byte("foo"), 0644)
+	util.WriteFile(fs, "foo", []byte("foo2"), 0644)
+
+	err = w.AddWithOptions(&AddOptions{
+		Path:  "foo",
+		Force: true,
+	})
+	c.Assert(err, IsNil)
+
+	hash, err := w.Commit("commit foo only\n", &CommitOptions{
+		Author: defaultSignature(),
+	})
+
+	c.Assert(hash, Equals, expected)
+	c.Assert(err, IsNil)
+
+	assertStorageStatus(c, s.Repository, 13, 11, 10, expected)
 }
 
 func (s *WorktreeSuite) TestCommitAll(c *C) {
