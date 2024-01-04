@@ -465,6 +465,9 @@ type AddOptions struct {
 	// Glob adds all paths, matching pattern, to the index. If pattern matches a
 	// directory path, all directory contents are added to the index recursively.
 	Glob string
+	// Force add the path anyway with no status to check if modified/deleted. This option apply only if path passed
+	// Will not apply when All option is true
+	Force bool
 }
 
 // Validate validates the fields and sets the default values.
