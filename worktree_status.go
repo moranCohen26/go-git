@@ -347,6 +347,9 @@ func (w *Worktree) doAdd(path string, ignorePattern []gitignore.Pattern, force b
 	var added bool
 
 	fi, err := w.Filesystem.Lstat(path)
+	if err != nil {
+		return plumbing.ZeroHash, err
+	}
 
 	// status is required for doAddDirectory
 	if !force || fi.IsDir() {
